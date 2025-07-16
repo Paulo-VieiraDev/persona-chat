@@ -8,7 +8,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+frontend_url = "https://persona-chat-nine.vercel.app/" 
+CORS(app, resources={r"/api/*": {"origins": [frontend_url, "http://localhost:3000"]}})
 
 try:
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))

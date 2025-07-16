@@ -1,20 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// Atenção na importação: pegamos os tipos de dentro do PersonalityList
+
 import { PersonalityList, PersonalityDetails } from './components/PersonalityList';
 import { ChatWindow } from './components/ChatWindow';
 import { MessageInput } from './components/MessageInput';
 import { Header } from './components/Header';
-import { ArrowLeft} from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
-// Tipos
 export type MessageStatus = 'sent' | 'read';
 export type Message = { id: number; role: 'user' | 'model'; parts: { text: string }[]; status?: MessageStatus; };
 export type Personality = 'juninho' | 'penelope' | 'kelvin' | 'tiabeth' | 'tioroberto' | 'cleitinho';
 export type ChatHistories = Record<Personality, Message[]>;
 
-// Array de personalidades agora vive aqui, como fonte única de dados
 const personalities: PersonalityDetails[] = [
   { id: 'juninho', name: 'Juninho Bro', emoji: '🤪' },
   { id: 'penelope', name: 'Penélope Charmosa', emoji: '🥰' },
@@ -39,10 +37,8 @@ export default function HomePage() {
   const [selectedPersonality, setSelectedPersonality] = useState<Personality>('juninho');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Lógica para encontrar os detalhes da personalidade selecionada
   const currentPersonalityDetails = personalities.find(p => p.id === selectedPersonality);
-  
-  // ... (useEffects e handleSendMessage continuam iguais ao que você já tem)
+
   useEffect(() => {
     try {
       const savedHistories = localStorage.getItem('chat-histories');
@@ -71,7 +67,8 @@ export default function HomePage() {
     setChatHistories((prev) => ({ ...prev, [selectedPersonality]: updatedHistory }));
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ personalidade: selectedPersonality, historico: updatedHistory.map(({ id, status, ...msg }) => msg), }), });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await fetch(`${apiUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ personalidade: selectedPersonality, historico: updatedHistory.map(({ id, status, ...msg }) => msg), }), });
       if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
       const data = await response.json();
       const modelMessage: Message = { id: Date.now() + 1, role: 'model', parts: [{ text: data.resposta }], };
