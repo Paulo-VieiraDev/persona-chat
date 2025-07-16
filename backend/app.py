@@ -8,7 +8,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-frontend_url = "https://persona-chat-nine.vercel.app/" 
+frontend_url = "https://persona-chat-nine.vercel.app"
 CORS(app, resources={r"/api/*": {"origins": [frontend_url, "http://localhost:3000"]}})
 
 try:
